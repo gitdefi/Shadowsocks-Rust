@@ -16,7 +16,7 @@ FOLDER="/etc/ss-rust"
 FILE="/usr/local/bin/ss-rust"
 CONF="/etc/ss-rust/config.json"
 Now_ver_File="/etc/ss-rust/ver.txt"
-Local="/etc/sysctl.d/local.conf"
+# Local="/etc/sysctl.d/local.conf"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m" && Yellow_font_prefix="\033[0;33m"
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
@@ -58,37 +58,37 @@ sysArch() {
     fi    
 }
 
-#开启系统 TCP Fast Open
-enable_systfo() {
-	kernel=$(uname -r | awk -F . '{print $1}')
-	if [ "$kernel" -ge 3 ]; then
-		echo 3 >/proc/sys/net/ipv4/tcp_fastopen
-		[[ ! -e $Local ]] && echo "fs.file-max = 51200
-net.core.rmem_max = 67108864
-net.core.wmem_max = 67108864
-net.core.rmem_default = 65536
-net.core.wmem_default = 65536
-net.core.netdev_max_backlog = 4096
-net.core.somaxconn = 4096
-net.ipv4.tcp_syncookies = 1
-net.ipv4.tcp_tw_reuse = 1
-net.ipv4.tcp_tw_recycle = 0
-net.ipv4.tcp_fin_timeout = 30
-net.ipv4.tcp_keepalive_time = 1200
-net.ipv4.ip_local_port_range = 10000 65000
-net.ipv4.tcp_max_syn_backlog = 4096
-net.ipv4.tcp_max_tw_buckets = 5000
-net.ipv4.tcp_fastopen = 3
-net.ipv4.tcp_rmem = 4096 87380 67108864
-net.ipv4.tcp_wmem = 4096 65536 67108864
-net.ipv4.tcp_mtu_probing = 1
-net.ipv4.tcp_ecn=1
-net.core.default_qdisc=fq
-net.ipv4.tcp_congestion_control = bbr" >>/etc/sysctl.d/local.conf && sysctl --system >/dev/null 2>&1
-	else
-		echo -e "$Error系统内核版本过低，无法支持 TCP Fast Open ！"
-	fi
-}
+# #开启系统 TCP Fast Open
+# enable_systfo() {
+# 	kernel=$(uname -r | awk -F . '{print $1}')
+# 	if [ "$kernel" -ge 3 ]; then
+# 		echo 3 >/proc/sys/net/ipv4/tcp_fastopen
+# 		[[ ! -e $Local ]] && echo "fs.file-max = 51200
+# net.core.rmem_max = 67108864
+# net.core.wmem_max = 67108864
+# net.core.rmem_default = 65536
+# net.core.wmem_default = 65536
+# net.core.netdev_max_backlog = 4096
+# net.core.somaxconn = 4096
+# net.ipv4.tcp_syncookies = 1
+# net.ipv4.tcp_tw_reuse = 1
+# net.ipv4.tcp_tw_recycle = 0
+# net.ipv4.tcp_fin_timeout = 30
+# net.ipv4.tcp_keepalive_time = 1200
+# net.ipv4.ip_local_port_range = 10000 65000
+# net.ipv4.tcp_max_syn_backlog = 4096
+# net.ipv4.tcp_max_tw_buckets = 5000
+# net.ipv4.tcp_fastopen = 3
+# net.ipv4.tcp_rmem = 4096 87380 67108864
+# net.ipv4.tcp_wmem = 4096 65536 67108864
+# net.ipv4.tcp_mtu_probing = 1
+# net.ipv4.tcp_ecn=1
+# net.core.default_qdisc=fq
+# net.ipv4.tcp_congestion_control = bbr" >>/etc/sysctl.d/local.conf && sysctl --system >/dev/null 2>&1
+# 	else
+# 		echo -e "$Error系统内核版本过低，无法支持 TCP Fast Open ！"
+# 	fi
+# }
 
 check_installed_status(){
 	[[ ! -e ${FILE} ]] && echo -e "${Error} Shadowsocks Rust 没有安装，请检查！" && exit 1
@@ -150,30 +150,30 @@ stable_Download() {
 	fi
 }
 
-# 备用源
-backup_Download() {
-	echo -e "${Info} 试图请求 备份源(旧版本) Shadowsocks Rust ……"
-	wget --no-check-certificate -N "https://raw.githubusercontent.com/xOS/Others/master/shadowsocks-rust/v1.14.1/shadowsocks-v1.14.1.${arch}-unknown-linux-gnu.tar.xz"
-	if [[ ! -e "shadowsocks-v1.14.1.${arch}-unknown-linux-gnu.tar.xz" ]]; then
-		echo -e "${Error} Shadowsocks Rust 备份源(旧版本) 下载失败！"
-		return 1 && exit 1
-	else
-		tar -xvf "shadowsocks-v1.14.1.${arch}-unknown-linux-gnu.tar.xz"
-	fi
-	if [[ ! -e "ssserver" ]]; then
-		echo -e "${Error} Shadowsocks Rust 备份源(旧版本) 解压失败 !"
-		echo -e "${Error} Shadowsocks Rust 备份源(旧版本) 安装失败 !"
-		return 1 && exit 1
-	else
-		rm -rf "shadowsocks-v1.14.1.${arch}-unknown-linux-gnu.tar.xz"
-		chmod +x ssserver
-	    mv -f ssserver "${FILE}"
-	    rm sslocal ssmanager ssservice ssurl
-		echo "v1.14.1" > ${Now_ver_File}
-		echo -e "${Info} Shadowsocks Rust 备份源(旧版本) 主程序下载安装完毕！"
-		return 0
-	fi
-}
+# # 备用源
+# backup_Download() {
+# 	echo -e "${Info} 试图请求 备份源(旧版本) Shadowsocks Rust ……"
+# 	wget --no-check-certificate -N "https://raw.githubusercontent.com/xOS/Others/master/shadowsocks-rust/v1.14.1/shadowsocks-v1.14.1.${arch}-unknown-linux-gnu.tar.xz"
+# 	if [[ ! -e "shadowsocks-v1.14.1.${arch}-unknown-linux-gnu.tar.xz" ]]; then
+# 		echo -e "${Error} Shadowsocks Rust 备份源(旧版本) 下载失败！"
+# 		return 1 && exit 1
+# 	else
+# 		tar -xvf "shadowsocks-v1.14.1.${arch}-unknown-linux-gnu.tar.xz"
+# 	fi
+# 	if [[ ! -e "ssserver" ]]; then
+# 		echo -e "${Error} Shadowsocks Rust 备份源(旧版本) 解压失败 !"
+# 		echo -e "${Error} Shadowsocks Rust 备份源(旧版本) 安装失败 !"
+# 		return 1 && exit 1
+# 	else
+# 		rm -rf "shadowsocks-v1.14.1.${arch}-unknown-linux-gnu.tar.xz"
+# 		chmod +x ssserver
+# 	    mv -f ssserver "${FILE}"
+# 	    rm sslocal ssmanager ssservice ssurl
+# 		echo "v1.14.1" > ${Now_ver_File}
+# 		echo -e "${Info} Shadowsocks Rust 备份源(旧版本) 主程序下载安装完毕！"
+# 		return 0
+# 	fi
+# }
 
 Download() {
 	if [[ ! -e "${FOLDER}" ]]; then
@@ -194,14 +194,22 @@ Description= Shadowsocks Rust Service
 After=network-online.target
 Wants=network-online.target systemd-networkd-wait-online.service
 [Service]
-LimitNOFILE=32767 
+# LimitNOFILE=32767
+LimitNOFILE=51200
 Type=simple
 User=root
 Restart=on-failure
 RestartSec=5s
-DynamicUser=true
-ExecStartPre=/bin/sh -c 'ulimit -n 51200'
+# DynamicUser=true
+# ExecStartPre=/bin/sh -c 'ulimit -n 51200'
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+LimitMEMLOCK=infinity
+Environment=RUST_LOG=error
+Environment=MONOIO_FORCE_LEGACY_DRIVER=1
 ExecStart=/usr/local/bin/ss-rust -c /etc/ss-rust/config.json
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ss-rust-server
 [Install]
 WantedBy=multi-user.target' > /etc/systemd/system/ss-rust.service
 systemctl enable --now ss-rust
@@ -216,7 +224,7 @@ Installation_dependency(){
 		apt-get update
 		apt-get install jq gzip wget curl unzip xz-utils openssl -y
 	fi
-	\cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+	# \cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 }
 
 Write_config(){
